@@ -22,7 +22,16 @@
   "lockFileMaintenance": {
     "automerge": true
   },
+  "major": {
+    "dependencyDashboardApproval": true
+  },
   "packageRules": [
+    {
+      "description": "Overrides and resolutions are security floors under parents that pin a major; bumping one across a major would force that major onto them",
+      "matchDepTypes": ["overrides", "pnpm.overrides", "pnpm-workspace.overrides", "resolutions"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
     {
       "description": "Automerge minor/patch updates of stable (>=1.0) dependencies once required checks pass",
       "matchUpdateTypes": ["minor", "patch"],
