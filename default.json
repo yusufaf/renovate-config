@@ -1,0 +1,51 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for yusufaf repositories",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitTypeAll(chore)",
+    ":maintainLockFilesWeekly",
+    "helpers:pinGitHubActionDigestsToSemver",
+    "security:minimumReleaseAgeNpm",
+    "security:minimumReleaseAgePypi",
+    ":configMigration"
+  ],
+  "timezone": "America/Los_Angeles",
+  "schedule": ["* 0-8 * * 1"],
+  "prConcurrentLimit": 5,
+  "addLabels": ["dependencies"],
+  "postUpdateOptions": ["pnpmDedupe"],
+  "vulnerabilityAlerts": {
+    "addLabels": ["security"],
+    "prConcurrentLimit": 3
+  },
+  "lockFileMaintenance": {
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Automerge minor/patch updates of stable (>=1.0) dependencies once required checks pass",
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^v?0(\\.|$)/",
+      "automerge": true
+    },
+    {
+      "description": "Group non-major devDependency updates into one PR",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "dev dependencies (non-major)"
+    },
+    {
+      "description": "One PR for all GitHub Actions bumps, typed ci so release-please ignores it",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "addLabels": ["ci"],
+      "semanticCommitType": "ci"
+    },
+    {
+      "description": "Docker image bumps deploy apps (fly.io) and may run migrations; always review",
+      "matchManagers": ["dockerfile"],
+      "automerge": false
+    }
+  ]
+}
