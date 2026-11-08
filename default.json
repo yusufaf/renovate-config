@@ -17,20 +17,24 @@
   "postUpdateOptions": ["pnpmDedupe"],
   "vulnerabilityAlerts": {
     "addLabels": ["security"],
-    "prConcurrentLimit": 3
+    "prConcurrentLimit": 3,
+    "dependencyDashboardApproval": false
   },
   "lockFileMaintenance": {
     "automerge": true
   },
-  "major": {
-    "dependencyDashboardApproval": true
-  },
   "packageRules": [
     {
-      "description": "Overrides and resolutions are security floors under parents that pin a major; bumping one across a major would force that major onto them",
-      "matchDepTypes": ["overrides", "pnpm.overrides", "pnpm-workspace.overrides", "resolutions"],
+      "description": "Majors wait as Dependency Dashboard checkboxes instead of taking PR slots. Security fixes bypass this: Renovate force-applies vulnerabilityAlerts after these rules",
       "matchUpdateTypes": ["major"],
-      "enabled": false
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Overrides and resolutions are security floors under parents that pin a version line; a 0.x minor bump is breaking too, so gate it like a major",
+      "matchDepTypes": ["overrides", "pnpm.overrides", "pnpm-workspace.overrides", "resolutions"],
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "/^[\\^~>=<v ]*0(\\.|$)/",
+      "dependencyDashboardApproval": true
     },
     {
       "description": "Automerge minor/patch updates of stable (>=1.0) dependencies once required checks pass",
