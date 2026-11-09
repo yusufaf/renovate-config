@@ -30,14 +30,7 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "Overrides and resolutions are security floors under parents that pin a version line; a 0.x minor bump is breaking too, so gate it like a major",
-      "matchDepTypes": ["overrides", "pnpm.overrides", "pnpm-workspace.overrides", "resolutions"],
-      "matchUpdateTypes": ["minor"],
-      "matchCurrentVersion": "/^[\\^~>=<v ]*0(\\.|$)/",
-      "dependencyDashboardApproval": true
-    },
-    {
-      "description": "One weekly PR for minor/patch updates of stable (>=1.0) dependencies, automerged once required checks pass. One PR means one lockfile rebase and one CI run, not one per package",
+      "description": "One weekly PR for minor/patch updates of stable (>=1.0) dependencies, automerged once required checks pass. One PR means one lockfile rebase and one CI run, not one per package. The pre-1.0 pattern here and in the next two rules must stay identical (one negated)",
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^[\\^~>=<v ]*0(\\.|$)/",
       "groupName": "stable dependencies (non-major)",
@@ -53,6 +46,16 @@
       "automerge": false
     },
     {
+      "description": "Overrides and resolutions are security floors under parents that pin a version line; a 0.x minor bump is breaking, so it needs dashboard approval, in its own group so it can't stall the pre-1.0 group",
+      "matchDepTypes": ["overrides", "pnpm.overrides", "pnpm-workspace.overrides", "resolutions"],
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "/^[\\^~>=<v ]*0(\\.|$)/",
+      "groupName": "pre-1.0 overrides (approval)",
+      "groupSlug": "pre-1-0-overrides",
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
       "description": "One PR for all GitHub Actions bumps, typed ci so release-please ignores it",
       "matchManagers": ["github-actions"],
       "groupName": "github actions",
@@ -60,8 +63,14 @@
       "semanticCommitType": "ci"
     },
     {
-      "description": "Docker image bumps deploy apps (fly.io) and may run migrations; always review, in their own PR",
-      "matchManagers": ["dockerfile"],
+      "description": "Actions minor/patch bumps automerge; SHA pins and digest updates do not",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "Container image bumps (Dockerfile, compose, ...) deploy apps (fly.io) and may run migrations; always review, in their own PR",
+      "matchCategories": ["docker"],
       "groupName": "docker images",
       "groupSlug": "docker",
       "automerge": false
