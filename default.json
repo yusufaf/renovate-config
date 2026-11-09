@@ -37,16 +37,20 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "Automerge minor/patch updates of stable (>=1.0) dependencies once required checks pass",
+      "description": "One weekly PR for minor/patch updates of stable (>=1.0) dependencies, automerged once required checks pass. One PR means one lockfile rebase and one CI run, not one per package",
       "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^v?0(\\.|$)/",
+      "matchCurrentVersion": "!/^[\\^~>=<v ]*0(\\.|$)/",
+      "groupName": "stable dependencies (non-major)",
+      "groupSlug": "stable-non-major",
       "automerge": true
     },
     {
-      "description": "Group non-major devDependency updates into one PR",
-      "matchDepTypes": ["devDependencies"],
+      "description": "Pre-1.0 minor/patch updates can break (semver allows it), so they get their own PR that waits for review",
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "dev dependencies (non-major)"
+      "matchCurrentVersion": "/^[\\^~>=<v ]*0(\\.|$)/",
+      "groupName": "pre-1.0 dependencies (review)",
+      "groupSlug": "pre-1-0",
+      "automerge": false
     },
     {
       "description": "One PR for all GitHub Actions bumps, typed ci so release-please ignores it",
@@ -56,8 +60,10 @@
       "semanticCommitType": "ci"
     },
     {
-      "description": "Docker image bumps deploy apps (fly.io) and may run migrations; always review",
+      "description": "Docker image bumps deploy apps (fly.io) and may run migrations; always review, in their own PR",
       "matchManagers": ["dockerfile"],
+      "groupName": "docker images",
+      "groupSlug": "docker",
       "automerge": false
     }
   ]
